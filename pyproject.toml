@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-chunking-benchmark"
+version = "0.1.0"
+description = "Benchmark how chunk size and embedding model affect RAG retrieval on a 200-page policy handbook with near-duplicate pages."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Roshan Yadav" }]
+dependencies = [
+  "langchain-core>=0.3",
+  "langchain-community>=0.3,<0.5",
+  "langchain-text-splitters>=0.3",
+  "faiss-cpu>=1.8",
+  "pypdf>=4.0",
+  "numpy>=1.26",
+  "pandas>=2.0",
+  "tabulate>=0.9",
+  "matplotlib>=3.8",
+  "reportlab>=4.0",
+]
+
+[project.optional-dependencies]
+models = [
+  "langchain-huggingface>=0.1",
+  "sentence-transformers>=3.0",
+  "transformers>=4.45",
+  "torch>=2.3",
+  "accelerate>=0.30",
+]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+rag-bench = "rag_bench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = ["ignore:`langchain-community` is being sunset:DeprecationWarning"]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
