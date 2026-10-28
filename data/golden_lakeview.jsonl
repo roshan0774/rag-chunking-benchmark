@@ -1,0 +1,33 @@
+{"id": 1, "question": "Where is Lakeview's headquarters located?", "answer": "4180 Harbor Point Drive", "page": 4}
+{"id": 2, "question": "Who founded Lakeview Data Systems?", "answer": "Meera Castellano", "page": 18}
+{"id": 3, "question": "What year was the company founded?", "answer": "2011", "page": 18}
+{"id": 4, "question": "What is a 'Lighthouse Review'?", "answer": "quarterly cross-team architecture review", "page": 20}
+{"id": 5, "question": "How many days of PTO do full-time employees earn each year?", "answer": "23 days", "page": 21}
+{"id": 6, "question": "How many unused vacation days can be carried into the next year?", "answer": "7 unused days", "page": 21}
+{"id": 7, "question": "How long is paid leave for a primary caregiver after a new child?", "answer": "18 weeks", "page": 23}
+{"id": 8, "question": "What is the annual cap on tuition reimbursement?", "answer": "$6,250", "page": 27}
+{"id": 9, "question": "How much is the monthly wellness stipend?", "answer": "$85", "page": 28}
+{"id": 10, "question": "After how many years of service can someone take a paid sabbatical?", "answer": "seven years", "page": 37}
+{"id": 11, "question": "What is the minimum password length?", "answer": "16 characters", "page": 41}
+{"id": 12, "question": "How quickly must a security incident be reported, and to which extension?", "answer": "extension 4477", "page": 45}
+{"id": 13, "question": "Who is the Data Protection Officer?", "answer": "Priya Venkataraman", "page": 47}
+{"id": 14, "question": "What is the production Snowflake account called?", "answer": "LVDS_PROD_EAST", "page": 62}
+{"id": 15, "question": "Which warehouse do dbt runs use by default?", "answer": "TRANSFORM_WH_M", "page": 62}
+{"id": 16, "question": "What prefix must Airflow DAG IDs use?", "answer": "lvds_", "page": 65}
+{"id": 17, "question": "How many retries must every Airflow DAG be configured with?", "answer": "retries to 3", "page": 65}
+{"id": 18, "question": "At what credit usage does a single Snowflake query trigger a cost alert?", "answer": "40 credits", "page": 73}
+{"id": 19, "question": "Who must approve backfills covering more than 90 days?", "answer": "Tomasz Reyes", "page": 77}
+{"id": 20, "question": "How is a Monthly Active Customer defined?", "answer": "three logged-in sessions", "page": 81}
+{"id": 21, "question": "How often must certified reports be re-certified?", "answer": "120 days", "page": 84}
+{"id": 22, "question": "Who chairs the model review board?", "answer": "Lucia Brandt", "page": 104}
+{"id": 23, "question": "What chunk size is standard for internal RAG pipelines?", "answer": "800 tokens", "page": 107}
+{"id": 24, "question": "What is the code name of the managed vector service used in production?", "answer": "Kestrel", "page": 108}
+{"id": 25, "question": "What is each team's default monthly GPU quota?", "answer": "320 GPU hours", "page": 113}
+{"id": 26, "question": "What is the domestic meal per diem?", "answer": "$74", "page": 124}
+{"id": 27, "question": "Purchases above what amount need CFO approval?", "answer": "$25,000", "page": 136}
+{"id": 28, "question": "When is the standard maintenance window?", "answer": "Sunday from 1:00 AM to 5:00 AM", "page": 151}
+{"id": 29, "question": "How often are laptops replaced?", "answer": "42 months", "page": 155}
+{"id": 30, "question": "How long are application logs kept?", "answer": "400 days", "page": 164}
+{"id": 31, "question": "Within how many days must customer privacy requests be completed?", "answer": "21 calendar days", "page": 165}
+{"id": 32, "question": "What is the first-response target for Priority 1 customer tickets?", "answer": "15 minutes", "page": 184}
+{"id": 33, "question": "What is the maximum service credit for a single outage?", "answer": "12 percent", "page": 191}

@@ -24,7 +24,7 @@ class Result:
     hit_at_5: float
     mrr_at_10: float
     answer_hit_at_5: float   # a top-5 chunk from the correct page contains the exact answer value
-    wrong_office_at_1: float  # top-1 is the right topic but another office's page (near-duplicate error)
+    wrong_office_at_1: float | None  # top-1 is the right topic but another office's page (Ridgeline only)
     index_seconds: float
     query_ms_p50: float
     index_mb: float
@@ -65,20 +65,23 @@ def run_one(model: str, chunk_size: int, pages, golden, embedder=None, pages_per
         rank = next((i + 1 for i, p in enumerate(pg) if p == target), None)
         rr += 1 / rank if rank else 0
         ans5 += any(pg[i] == target and _contains(texts[ids[i]], g["answer"]) for i in range(min(5, len(ids))))
-        same_topic = (pg[0] - 1) // pages_per_topic == (target - 1) // pages_per_topic
-        wrong_office += same_topic and pg[0] != target
+        if pages_per_topic:
+            same_topic = (pg[0] - 1) // pages_per_topic == (target - 1) // pages_per_topic
+            wrong_office += same_topic and pg[0] != target
 
     n = len(golden)
     return Result(
         model=model, chunk_size=chunk_size, n_chunks=len(chunks),
         hit_at_1=round(hits1 / n, 3), hit_at_5=round(hits5 / n, 3), mrr_at_10=round(rr / n, 3),
-        answer_hit_at_5=round(ans5 / n, 3), wrong_office_at_1=round(wrong_office / n, 3),
+        answer_hit_at_5=round(ans5 / n, 3),
+        wrong_office_at_1=round(wrong_office / n, 3) if pages_per_topic else None,
         index_seconds=round(index_s, 2), query_ms_p50=round(statistics.median(lat), 2),
         index_mb=round(vecs.nbytes / 1e6, 2),
     )
 
 
-def run_grid(pdf, golden_path, models: list[str], sizes: list[int], log=print) -> list[Result]:
+def run_grid(pdf, golden_path, models: list[str], sizes: list[int], pages_per_topic: int = 10,
+             log=print) -> list[Result]:
     pages = load_pages(pdf)
     golden = load_golden(golden_path)
     log(f"{len(pages)} pages, {len(golden)} questions")
@@ -86,15 +89,15 @@ def run_grid(pdf, golden_path, models: list[str], sizes: list[int], log=print) -
     for m in models:
         emb = get_embedder(m)  # load each model once
         for s in sizes:
-            r = run_one(m, s, pages, golden, embedder=emb)
+            r = run_one(m, s, pages, golden, embedder=emb, pages_per_topic=pages_per_topic)
             log(f"  {m:10s} chunk={s or 'page':>5}  chunks={r.n_chunks:5d}  hit@1={r.hit_at_1:.3f}  "
                 f"hit@5={r.hit_at_5:.3f}  mrr={r.mrr_at_10:.3f}  ans@5={r.answer_hit_at_5:.3f}  "
-                f"wrong_office@1={r.wrong_office_at_1:.3f}")
+                f"wrong_office@1={r.wrong_office_at_1 if r.wrong_office_at_1 is not None else 'n/a'}")
             results.append(r)
     return results
 
 
-def save(results: list[Result], out_dir: str | Path) -> dict[str, Path]:
+def save(results: list[Result], out_dir: str | Path, title: str = "handbook benchmark") -> dict[str, Path]:
     import pandas as pd
 
     out = Path(out_dir)
@@ -105,9 +108,11 @@ def save(results: list[Result], out_dir: str | Path) -> dict[str, Path]:
 
     cols = ["model", "chunk", "n_chunks", "hit_at_1", "hit_at_5", "mrr_at_10", "answer_hit_at_5",
             "wrong_office_at_1", "query_ms_p50", "index_mb"]
+    if df["wrong_office_at_1"].isna().all():
+        cols.remove("wrong_office_at_1")
     best = df.sort_values(["hit_at_1", "mrr_at_10"], ascending=False).iloc[0]
     md = [
-        "# Benchmark results\n",
+        f"# Benchmark results: {title}\n",
         f"Best configuration: **{best['model']}**, chunk size **{best['chunk']}**, "
         f"hit@1 = {best['hit_at_1']:.3f}, MRR@10 = {best['mrr_at_10']:.3f}\n",
         df[cols].to_markdown(index=False),
@@ -117,13 +122,13 @@ def save(results: list[Result], out_dir: str | Path) -> dict[str, Path]:
 
     paths = {"csv": out / "results.csv", "md": out / "summary.md"}
     try:
-        paths["chart"] = _chart(df, out / "hit_at_1.png")
+        paths["chart"] = _chart(df, out / "hit_at_1.png", title)
     except ImportError:
         pass
     return paths
 
 
-def _chart(df, path: Path) -> Path:
+def _chart(df, path: Path, title: str) -> Path:
     import matplotlib
 
     matplotlib.use("Agg")
@@ -136,7 +141,7 @@ def _chart(df, path: Path) -> Path:
     ax.set_xticks(range(pivot.shape[1]), pivot.columns)
     ax.set_yticks(range(pivot.shape[0]), pivot.index)
     ax.set_xlabel("chunk size (characters)")
-    ax.set_title("Retrieval hit@1 on 200 handbook questions")
+    ax.set_title(f"Retrieval hit@1 ({title})")
     for i in range(pivot.shape[0]):
         for j in range(pivot.shape[1]):
             v = pivot.values[i, j]

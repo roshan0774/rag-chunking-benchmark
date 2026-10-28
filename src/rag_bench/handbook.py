@@ -5,7 +5,7 @@ most of their wording and differ in the office name and one key value. That give
 distractors, the main difficulty in real handbook and policy RAG: the retriever must find the right
 *office's* page, not just the right topic.
 
-"Lakeview Group" is a fictional company. All names and values are generated at random.
+"Ridgeline Group" is a fictional company. All names and values are generated at random.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-COMPANY = "Lakeview Group"
+COMPANY = "Ridgeline Group"
 OFFICES = ["Charlotte", "Atlanta", "Denver", "Austin", "Columbus",
            "Phoenix", "Raleigh", "Nashville", "Tampa", "Richmond"]
 
@@ -212,8 +212,8 @@ def write_pdf(pages: list[dict], out: Path) -> None:
 def build_dataset(out_dir: str | Path = "data", seed: int = 7) -> tuple[Path, Path]:
     out_dir = Path(out_dir)
     pages, qas = generate(seed)
-    pdf = out_dir / "lakeview_handbook_200p.pdf"
-    golden = out_dir / "golden_200.jsonl"
+    pdf = out_dir / "ridgeline_handbook_200p.pdf"
+    golden = out_dir / "golden_ridgeline.jsonl"
     write_pdf(pages, pdf)
     out_dir.mkdir(parents=True, exist_ok=True)
     golden.write_text("\n".join(json.dumps(asdict(q)) for q in qas) + "\n")

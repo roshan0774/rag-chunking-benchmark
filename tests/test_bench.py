@@ -87,3 +87,25 @@ def test_save_handles_multiple_models(tmp_path, dataset):
     res += [run_one("hash2", s, pages, gold, embedder=HashingEmbeddings()) for s in (400, 0)]
     paths = save(res, tmp_path)
     assert json.dumps(str(paths["chart"]))
+
+
+def test_lakeview_golden_answers_are_on_their_pages():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    pages = {p.metadata["page"]: p.page_content for p in load_pages(root / "data" / "lakeview_handbook_200p.pdf")}
+    rows = load_golden(root / "data" / "golden_lakeview.jsonl")
+    assert len(pages) == 200 and len(rows) == 33
+    for r in rows:
+        assert _contains(pages[r["page"]], r["answer"]), r
+        assert sum(_contains(t, r["answer"]) for t in pages.values()) == 1, r  # each needle appears once
+
+
+def test_lakeview_run_has_no_wrong_office_metric():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    pages = load_pages(root / "data" / "lakeview_handbook_200p.pdf")
+    gold = load_golden(root / "data" / "golden_lakeview.jsonl")[:5]
+    r = run_one("hash", 400, pages, gold, embedder=HashingEmbeddings(), pages_per_topic=0)
+    assert r.wrong_office_at_1 is None

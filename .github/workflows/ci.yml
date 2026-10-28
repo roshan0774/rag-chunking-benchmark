@@ -16,5 +16,7 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: pytest -q
-      - name: Offline baseline benchmark (no model downloads)
-        run: rag-bench run --models hash --out results/ci
+      - name: Offline baseline benchmark on both datasets (no model downloads)
+        run: |
+          rag-bench run --dataset ridgeline --models hash --out results/ci_ridgeline
+          rag-bench run --dataset lakeview --models hash --out results/ci_lakeview
